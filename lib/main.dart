@@ -14,9 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Google Maps Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const MapSample(),
     );
   }
@@ -33,50 +31,54 @@ class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
+  // Lahore default position
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(31.5204, 74.3587), // Lahore
     zoom: 14.0,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    tilt: 59.440717697143555,
-    zoom: 19.151926040649414,
+  // FAB click -> Lahore hi zoom in
+  static const CameraPosition _kLahore = CameraPosition(
+    bearing: 0,
+    target: LatLng(31.5204, 74.3587),
+    tilt: 0,
+    zoom: 17.0, // thoda zyada zoom
   );
 
   final Set<Marker> _markers = {
     const Marker(
       markerId: MarkerId('lahore'),
       position: LatLng(31.5204, 74.3587),
-      infoWindow: InfoWindow(title: "Lahore", snippet: "City of Gardens"),
+      infoWindow: InfoWindow(title: "Customer", snippet: "Lahore"),
     ),
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Google Maps - Lahore Marker'),
-      ),
+      appBar: AppBar(title: const Text('Google Maps - Lahore Marker')),
       body: GoogleMap(
-        mapType: MapType.hybrid,
+        mapType: MapType.normal,
         initialCameraPosition: _kGooglePlex,
-        markers: _markers, // yahan marker add kar diya
+        markers: _markers,
+        zoomControlsEnabled:
+            true, // + / - zoom buttons dikhayega (bottom-right)
+        zoomGesturesEnabled: true, // finger gestures (pinch zoom) allow karega
+
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
+        onPressed: _goToLahore,
+        label: const Text('Go to Lahore'),
+        icon: const Icon(Icons.location_city),
       ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goToLahore() async {
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLahore));
   }
 }
